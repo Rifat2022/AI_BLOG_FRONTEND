@@ -8,6 +8,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BlogService } from '../../../core/services/blog.service';
 import { Nl2brPipe } from "../../../shared/pipes/nl2br.pipe";
+import { Category } from '../../../core/models/category.model';
 
 @Component({
   selector: 'app-blog-create',
@@ -75,6 +76,7 @@ export class BlogCreateComponent {
   generateImage = false;
   loading = signal(false);
   generatedBlog = signal<any>(null);
+  selectedCategoryId : string | null = null; 
 
   generate() {
     if (!this.topic.trim()) return;
@@ -100,13 +102,21 @@ export class BlogCreateComponent {
   }
 
   save() {
-    const blog = this.generatedBlog();
-    this.blogService.saveBlog(blog).subscribe({
-      next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Saved', detail: 'Blog saved successfully' });
-        this.router.navigate(['/blog/list']);
-      },
-      error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Save failed' })
-    });
-  }
+  const blog = this.generatedBlog();
+  if (!blog) return;
+
+  this.blogService.createBlog({
+    title: blog.title,
+    content: blog.content,
+    topic: this.topic,
+    platform: this.platform,
+    categoryId: this.selectedCategoryId || undefined || '',
+  }).subscribe({
+    next: () => {
+      this.messageService.add({ severity: 'success', summary: 'Saved', detail: 'Blog saved successfully' });
+      this.router.navigate(['/blog/list']);
+    },
+    error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Save failed' })
+  });
+}
 }

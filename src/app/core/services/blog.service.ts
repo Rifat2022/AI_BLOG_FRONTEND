@@ -8,7 +8,7 @@ import { Category } from '../models/category.model';
 export class BlogService {
   private apiUrl = 'http://localhost:8000/api/v1';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Categories
   getCategories(): Observable<Category[]> {
@@ -58,6 +58,11 @@ export class BlogService {
   }
 
   saveBlog(blog: Partial<Blog>): Observable<Blog> {
+    return this.http.post<Blog>(`${this.apiUrl}/blog/posts`, blog)
+      .pipe(retry(1), catchError(this.handleError));
+  }
+  
+  createBlog(blog: Partial<Blog>): Observable<Blog> {
     return this.http.post<Blog>(`${this.apiUrl}/blog/posts`, blog)
       .pipe(retry(1), catchError(this.handleError));
   }
