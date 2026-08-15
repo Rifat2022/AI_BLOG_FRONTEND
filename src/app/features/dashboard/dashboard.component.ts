@@ -4,10 +4,10 @@ import { RouterLink } from '@angular/router';
 import { BlogService } from '../../core/services/blog.service';
 
 @Component({
-    selector: 'app-dashboard',
-    standalone: true,
-    imports: [CommonModule, RouterLink],
-    template: `
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  template: `
     <div class="space-y-6">
       <!-- Header -->
       <div>
@@ -58,32 +58,32 @@ import { BlogService } from '../../core/services/blog.service';
   `
 })
 export class DashboardComponent implements OnInit {
-    private blogService = inject(BlogService);
+  private blogService = inject(BlogService);
 
-    stats = signal({ totalBlogs: 0, published: 0, drafts: 0, categories: 0 });
-    recentBlogs = signal<any[]>([]);
+  stats = signal({ totalBlogs: 0, published: 0, drafts: 0, categories: 0 });
+  recentBlogs = signal<any[]>([]);
 
-    ngOnInit() {
-        this.loadDashboard();
-    }
+  ngOnInit() {
+    this.loadDashboard();
+  }
 
-    loadDashboard() {
-        this.blogService.getBlogs({ limit: 5 }).subscribe({
-            next: (blogs) => {
-                this.recentBlogs.set(blogs);
-                this.stats.set({
-                    totalBlogs: blogs.length,
-                    published: blogs.filter(b => b.status === 'published').length,
-                    drafts: blogs.filter(b => b.status === 'draft').length,
-                    categories: 0 // Will be fetched separately
-                });
-            }
+  loadDashboard() {
+    this.blogService.getBlogs({ limit: 5 }).subscribe({
+      next: (blogs) => {
+        this.recentBlogs.set(blogs);
+        this.stats.set({
+          totalBlogs: blogs.length,
+          published: blogs.filter(b => b.status === 'published').length,
+          drafts: blogs.filter(b => b.status === 'draft').length,
+          categories: 0 // Will be fetched separately
         });
+      }
+    });
 
-        this.blogService.getCategories().subscribe({
-            next: (cats) => {
-                this.stats.update(s => ({ ...s, categories: cats.length }));
-            }
-        });
-    }
+    this.blogService.getCategories().subscribe({
+      next: (cats) => {
+        this.stats.update(s => ({ ...s, categories: cats.length }));
+      }
+    });
+  }
 }

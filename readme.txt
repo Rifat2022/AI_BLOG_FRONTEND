@@ -1,0 +1,1 @@
+run in public ip : ng serve --host 192.168.66.46 --port 4200
